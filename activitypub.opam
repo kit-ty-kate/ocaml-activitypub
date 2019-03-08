@@ -1,4 +1,4 @@
-opam-version: "1.2"
+opam-version: "2.0"
 version: "0.1~"
 license: "MIT"
 maintainer: "Kate <kit.ty.kate@disroot.org>"
@@ -7,10 +7,11 @@ authors: [
   "Kate <kit.ty.kate@disroot.org>"
 ]
 homepage: "https://github.com/kit-ty-kate/ocaml-activitypub"
-dev-repo: "https://github.com/kit-ty-kate/ocaml-activitypub.git"
+dev-repo: "git://github.com/kit-ty-kate/ocaml-activitypub.git"
 bug-reports: "https://github.com/kit-ty-kate/ocaml-activitypub/issues"
+synopsis: "An activitypub library for OCaml"
 build: ["dune" "build" "-p" name "-j" jobs]
-build-test: ["dune" "runtest" "-p" name "-j" jobs]
+run-test: ["dune" "runtest" "-p" name "-j" jobs]
 depends: [
   "dune" {build}
 ]
