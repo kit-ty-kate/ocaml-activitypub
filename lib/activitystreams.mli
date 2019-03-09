@@ -6,11 +6,15 @@ type duration = unit (* TODO *)
 type nonNegativeInteger = unit (* TODO *)
 type units = Cm | Feet | Inches | Km | Meter | Miles
 
+type ap_unknown
+type ext_map = (string * ap_unknown) list
+
 (* TODO: Replace type indirections with polymorphic variants once the OCaml type-system has been fixed *)
 
 type t =
   | Ap_objects of ty_object
   | Ap_links of ty_link
+  | Ap_unknown of ap_unknown
 
 and ty_object =
   (* Core Types *)
@@ -66,21 +70,25 @@ and ty_object =
   | Place of ap_place
   | Profile of ap_profile
   | Tombstone of ap_tombstone
+  | Ap_unknown_object of ap_unknown
 
 and ty_link =
   (* Core Types *)
   | Link of ap_link
   (* Link Types *)
   | Mention of ap_link
+  | Ap_unknown_link of ap_unknown
 
 and ty_collection =
   | Collection of ap_collection
   | OrderedCollection of ap_collection
   | Ap_collectionPage of ty_collectionPage
+  | Ap_unknown_collection of ap_unknown
 
 and ty_collectionPage =
   | CollectionPage of ap_collectionPage
   | OrderedCollectionPage of ap_orderedCollectionPage
+  | Ap_unknown_collectionPage of ap_unknown
 
 and ap_object = {
   id : prop_id; (* Not defined ??! *)
@@ -111,6 +119,7 @@ and ap_object = {
   bcc : prop_bcc;
   mediaType : prop_mediaType;
   duration : prop_duration;
+  ap_unknown_props : (string * ap_unknown) list
 }
 
 and ap_link = {
@@ -124,6 +133,7 @@ and ap_link = {
   height : prop_height;
   width : prop_width;
   preview : prop_preview;
+  ap_unknown_props : (string * ap_unknown) list
 }
 
 and ap_activity = {
