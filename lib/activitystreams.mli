@@ -1,9 +1,8 @@
 type ('a, 'b) either = Left of 'a | Right of 'b
 type ('a, 'b, 'c, 'd) either4 = Case1 of 'a | Case2 of 'b | Case3 of 'c | Case4 of 'd
 type anyURI = Uri.t
-type dateTime = unit (* TODO *)
-type duration = unit (* TODO *)
-type nonNegativeInteger = unit (* TODO *)
+type dateTime = {d_year : int; d_month : int; d_day : int; d_hours : int; d_minutes : int; d_seconds : int}
+type nonNegativeInteger = int (* TODO: not equivalent to xsd:nonNegativeInteger *)
 type units = Cm | Feet | Inches | Km | Meter | Miles
 
 type ap_unknown
@@ -250,7 +249,7 @@ and prop_accuracy = float option
 and prop_altitude = float option
 and prop_content = string list
 and prop_name = string list
-and prop_duration = duration option
+and prop_duration = dateTime option
 and prop_height = nonNegativeInteger option
 and prop_href = anyURI option
 and prop_hreflang = string option (* TODO: not equivalent to [BCP47] Language Tag *)
