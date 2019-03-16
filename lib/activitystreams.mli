@@ -1,275 +1,317 @@
 type ('a, 'b) either = Left of 'a | Right of 'b
-type ('a, 'b, 'c, 'd) either4 = Case1 of 'a | Case2 of 'b | Case3 of 'c | Case4 of 'd
+type ('a, 'b, 'c) either3 = Case1 of 'a | Case2 of 'b | Case3 of 'c
 type anyURI = Uri.t
 type dateTime = {d_year : int; d_month : int; d_day : int; d_hours : int; d_minutes : int; d_seconds : int}
 type nonNegativeInteger = int (* TODO: not equivalent to xsd:nonNegativeInteger *)
 type units = Cm | Feet | Inches | Km | Meter | Miles
 
-type ap_unknown
-type ext_map = (string * ap_unknown) list
+type ty_any = [`Any]
+type ty_object = [`Object | ty_any]
+type ty_link = [`Link | ty_any]
+type ty_activity = [`Activity | ty_object]
+type ty_collection = [`Collection | ty_object]
+type ty_collectionPage = [`CollectionPage | ty_collection]
+type ty_orderedCollectionPage = [`OrderedCollectionPage | ty_collectionPage]
+type ty_intransitiveActivity = [`IntransitiveActivity | ty_activity]
+type ty_question = [`Question | ty_intransitiveActivity]
+type ty_relationship = [`Relationship | ty_object]
+type ty_place = [`Place | ty_object]
+type ty_profile = [`Profile | ty_object]
+type ty_tombstone = [`Tombstone | ty_object]
+type ty_image = [`Image | ty_object]
 
-(* TODO: Replace type indirections with polymorphic variants once the OCaml type-system has been fixed *)
+type 'a t constraint 'a = [> ty_any ]
 
-type t =
-  | Ap_objects of ty_object
-  | Ap_links of ty_link
-  | Ap_unknown of ap_unknown
+type prop_id = anyURI option
+type prop_type = anyURI list
+type prop_actor = ty_any t list
+type prop_attachment = ty_any t list
+type prop_attributedTo = ty_any t list
+type prop_audience = ty_any t list
+type prop_bcc = ty_any t list
+type prop_bto = ty_any t list
+type prop_cc = ty_any t list
+type prop_context = ty_any t list
+type prop_current = (ty_collectionPage t, ty_link t) either option
+type prop_first = (ty_collectionPage t, ty_link t) either option
+type prop_generator = ty_any t list
+type prop_icon = (ty_image t, ty_link t) either list
+type prop_image = (ty_image t, ty_link t) either list
+type prop_inReplyTo = ty_any t list
+type prop_instrument = ty_any t list
+type prop_last = (ty_collectionPage t, ty_link t) either option
+type prop_location = ty_any t list
+type prop_items = ty_any t list
+type prop_oneOf = ty_any t list
+type prop_anyOf = ty_any t list
+type prop_closed = (ty_any t, dateTime, bool) either3 list
+type prop_origin = ty_any t list
+type prop_next = (ty_collectionPage t, ty_link t) either option
+type prop_object = ty_any t list
+type prop_prev = (ty_collectionPage t, ty_link t) either option
+type prop_preview = ty_any t list
+type prop_result = ty_any t list
+type prop_replies = ty_collection option
+type prop_tag = ty_any t list
+type prop_target = ty_any t list
+type prop_to = ty_any t list
+type prop_url = (anyURI, ty_link t) either list
+type prop_accuracy = float option
+type prop_altitude = float option
+type prop_content = string list
+type prop_name = string list
+type prop_duration = dateTime option
+type prop_height = nonNegativeInteger option
+type prop_href = anyURI option
+type prop_hreflang = string option (* TODO: not equivalent to [BCP47] Language Tag *)
+type prop_partOf = (ty_collection t, ty_link t) either option
+type prop_latitude = float option
+type prop_longitude = float option
+type prop_mediaType = string option (* TODO: not equivalent to MIME Media Type *)
+type prop_endTime = dateTime option
+type prop_published = dateTime option
+type prop_startTime = dateTime option
+type prop_radius = float option
+type prop_rel = string list list (* TODO: not equivalent to [RFC5988] or [HTML5] Link Relation *)
+type prop_startIndex = nonNegativeInteger option
+type prop_summary = string list
+type prop_totalItems = nonNegativeInteger option
+type prop_units = (units, anyURI) either option
+type prop_updated = dateTime option
+type prop_width = nonNegativeInteger option
+type prop_subject = ty_any t option
+type prop_relationship = ty_object t list
+type prop_describes = ty_object t option
+type prop_formerType = ty_object t list
+type prop_deleted = dateTime option
 
-and ty_object =
+type collectionPages = [
+  | `CollectionPage of ty_collectionPage t
+  | `OrderedCollectionPage of ty_orderedCollectionPage t
+]
+
+type collections = [
+  | `Collection of ty_collection t
+  | `OrderedCollection of ty_collection t
+  | collectionPages
+]
+
+type intransitiveActivities = [
+  | `IntransitiveActivity of ty_intransitiveActivity t
+  | `Arrive of ty_intransitiveActivity t
+  | `Travel of ty_intransitiveActivity t
+  | `Question of ty_question t
+]
+
+type activities = [
+  | `Activity of ty_activity t
+  | intransitiveActivities
+  | `Accept of ty_activity t
+  | `TentativeAccept of ty_activity t
+  | `Add of ty_activity t
+  | `Create of ty_activity t
+  | `Delete of ty_activity t
+  | `Follow of ty_activity t
+  | `Ignore of ty_activity t
+  | `Join of ty_activity t
+  | `Leave of ty_activity t
+  | `Like of ty_activity t
+  | `Offer of ty_activity t
+  | `Invite of ty_activity t
+  | `Reject of ty_activity t
+  | `TentativeReject of ty_activity t
+  | `Remove of ty_activity t
+  | `Undo of ty_activity t
+  | `Update of ty_activity t
+  | `View of ty_activity t
+  | `Listen of ty_activity t
+  | `Read of ty_activity t
+  | `Move of ty_activity t
+  | `Announce of ty_activity t
+  | `Block of ty_activity t
+  | `Flag of ty_activity t
+  | `Dislike of ty_activity t
+]
+
+type objects = [
   (* Core Types *)
-  | Object of ap_object
-  | Activity of ap_activity
-  | IntransitiveActivity of ap_intransitiveActivity
-  | Ap_collections of ty_collection
-  (* Activity Types *)
-  | Accept of ap_activity
-  | TentativeAccept of ap_activity
-  | Add of ap_activity
-  | Arrive of ap_intransitiveActivity
-  | Create of ap_activity
-  | Delete of ap_activity
-  | Follow of ap_activity
-  | Ignore of ap_activity
-  | Join of ap_activity
-  | Leave of ap_activity
-  | Like of ap_activity
-  | Offer of ap_activity
-  | Invite of ap_activity
-  | Reject of ap_activity
-  | TentativeReject of ap_activity
-  | Remove of ap_activity
-  | Undo of ap_activity
-  | Update of ap_activity
-  | View of ap_activity
-  | Listen of ap_activity
-  | Read of ap_activity
-  | Move of ap_activity
-  | Travel of ap_intransitiveActivity
-  | Announce of ap_activity
-  | Block of ap_activity
-  | Flag of ap_activity
-  | Dislike of ap_activity
-  | Question of ap_question
+  | `Object of ty_object t
+  | activities
+  | collections
   (* Actor Types *)
-  | Application of ap_object
-  | Group of ap_object
-  | Organization of ap_object
-  | Person of ap_object
-  | Service of ap_object
+  | `Application of ty_object t
+  | `Group of ty_object t
+  | `Organization of ty_object t
+  | `Person of ty_object t
+  | `Service of ty_object t
   (* Object Types *)
-  | Relationship of ap_relationship
-  | Article of ap_object
-  | Document of ap_object
-  | Audio of ap_object
-  | Image of ap_object
-  | Video of ap_object
-  | Note of ap_object
-  | Page of ap_object
-  | Event of ap_object
-  | Place of ap_place
-  | Profile of ap_profile
-  | Tombstone of ap_tombstone
-  | Ap_unknown_object of ap_unknown
+  | `Relationship of ty_relationship t
+  | `Article of ty_object t
+  | `Document of ty_object t
+  | `Audio of ty_object t
+  | `Image of ty_object t
+  | `Video of ty_object t
+  | `Note of ty_object t
+  | `Page of ty_object t
+  | `Event of ty_object t
+  | `Place of ty_place t
+  | `Profile of ty_profile t
+  | `Tombstone of ty_tombstone t
+]
 
-and ty_link =
+type links = [
   (* Core Types *)
-  | Link of ap_link
+  | `Link of ty_link t
   (* Link Types *)
-  | Mention of ap_link
-  | Ap_unknown_link of ap_unknown
+  | `Mention of ty_link t
+]
 
-and ty_collection =
-  | Collection of ap_collection
-  | OrderedCollection of ap_collection
-  | Ap_collectionPage of ty_collectionPage
-  | Ap_unknown_collection of ap_unknown
+module Unknown : sig
+  type unknown
+  type map = (string * unknown) list
 
-and ty_collectionPage =
-  | CollectionPage of ap_collectionPage
-  | OrderedCollectionPage of ap_orderedCollectionPage
-  | Ap_unknown_collectionPage of ap_unknown
+  val get_fields : [> ty_any] t -> (string * unknown) list
+end
 
-and ap_object = {
-  id : prop_id; (* Not defined ??! *)
-  type_ : prop_type; (* Not defined ??! *)
-  attachment : prop_attachment;
-  attributedTo : prop_attributedTo;
-  audience : prop_audience;
-  content : prop_content;
-  context : prop_context;
-  name : prop_name;
-  endTime : prop_endTime;
-  generator : prop_generator;
-  icon : prop_icon;
-  image : prop_image;
-  inReplyTo : prop_inReplyTo;
-  location : prop_location;
-  preview : prop_preview;
-  published : prop_published;
-  replies : prop_replies;
-  startTime : prop_startTime;
-  summary : prop_summary;
-  tag : prop_tag;
-  updated : prop_updated;
-  url : prop_url;
-  to_ : prop_to;
-  bto : prop_bto;
-  cc : prop_cc;
-  bcc : prop_bcc;
-  mediaType : prop_mediaType;
-  duration : prop_duration;
-  ap_unknown_props : (string * ap_unknown) list
-}
+module Any : sig
+  val id : [> ty_any] t -> prop_id
+  val type_ : [> ty_any] t -> [> objects | links | `Unknown of anyURI]
+  val mediaType : [> ty_any] t -> prop_mediaType
+  val name : [> ty_any] t -> prop_name
+  val preview : [> ty_any] t -> prop_preview
+end
 
-and ap_link = {
-  id : prop_id; (* Not defined ??! *)
-  type_ : prop_type; (* Not defined ??! *)
-  href : prop_href;
-  rel : prop_rel;
-  mediaType : prop_mediaType;
-  name : prop_name;
-  hreflang : prop_hreflang;
-  height : prop_height;
-  width : prop_width;
-  preview : prop_preview;
-  ap_unknown_props : (string * ap_unknown) list
-}
+module Object : sig
+  include module type of Any
 
-and ap_activity = {
-  ap_object : ap_object;
-  actor : prop_actor;
-  object_ : prop_object;
-  target : prop_target;
-  result : prop_result;
-  origin : prop_origin;
-  instrument : prop_instrument;
-}
+  val type_ : [> ty_object] t -> [> objects | `Unknown of anyURI]
 
-and ap_intransitiveActivity = {
-  ap_object : ap_object;
-  actor : prop_actor;
-  target : prop_target;
-  result : prop_result;
-  origin : prop_origin;
-  instrument : prop_instrument;
-}
+  val attachment : [> ty_object] t -> prop_attachment
+  val attributedTo : [> ty_object] t -> prop_attributedTo
+  val audience : [> ty_object] t -> prop_audience
+  val content : [> ty_object] t -> prop_content
+  val context : [> ty_object] t -> prop_context
+  val endTime : [> ty_object] t -> prop_endTime
+  val generator : [> ty_object] t -> prop_generator
+  val icon : [> ty_object] t -> prop_icon
+  val image : [> ty_object] t -> prop_image
+  val inReplyTo : [> ty_object] t -> prop_inReplyTo
+  val location : [> ty_object] t -> prop_location
+  val published : [> ty_object] t -> prop_published
+  val replies : [> ty_object] t -> prop_replies
+  val startTime : [> ty_object] t -> prop_startTime
+  val summary : [> ty_object] t -> prop_summary
+  val tag : [> ty_object] t -> prop_tag
+  val updated : [> ty_object] t -> prop_updated
+  val url : [> ty_object] t -> prop_url
+  val to_ : [> ty_object] t -> prop_to
+  val bto : [> ty_object] t -> prop_bto
+  val cc : [> ty_object] t -> prop_cc
+  val bcc : [> ty_object] t -> prop_bcc
+  val duration : [> ty_object] t -> prop_duration
+end
 
-and ap_collection = {
-  ap_object : ap_object;
-  totalItems : prop_totalItems;
-  current : prop_current;
-  first : prop_first;
-  last : prop_last;
-  items : prop_items;
-}
+module Link : sig
+  include module type of Any
 
-and ap_collectionPage = {
-  ap_collection : ap_collection;
-  partOf : prop_partOf;
-  next : prop_next;
-  prev : prop_prev;
-}
+  val type_ : [> ty_link] t -> [> links | `Unknown of anyURI]
 
-and ap_orderedCollectionPage = {
-  ap_collection : ap_collection;
-  ap_collectionPage : ap_collectionPage;
-  startIndex : prop_startIndex;
-}
+  val href : [> ty_link] t -> prop_href
+  val rel : [> ty_link] t -> prop_rel
+  val hreflang : [> ty_link] t -> prop_hreflang
+  val height : [> ty_link] t -> prop_height
+  val width : [> ty_link] t -> prop_width
+end
 
-and ap_question = {
-  ap_intransitiveActivity : ap_intransitiveActivity;
-  oneOf : prop_oneOf;
-  anyOf : prop_anyOf;
-  closed : prop_closed;
-}
+module Activity : sig
+  include module type of Object
 
-and ap_relationship = {
-  ap_object : ap_object;
-  subject : prop_subject;
-  object_ : prop_object;
-  relationship : prop_relationship;
-}
+  val type_ : [> ty_activity] t -> [> activities | `Unknown of anyURI]
 
-and ap_place = {
-  ap_object : ap_object;
-  accuracy : prop_accuracy;
-  altitude : prop_altitude;
-  latitude : prop_latitude;
-  longitude : prop_longitude;
-  radius : prop_radius;
-  units : prop_units;
-}
+  val actor : [> ty_activity] t -> prop_actor
+  val object_ : [> ty_activity] t -> prop_object
+  val target : [> ty_activity] t -> prop_target
+  val result : [> ty_activity] t -> prop_result
+  val origin : [> ty_activity] t -> prop_origin
+  val instrument : [> ty_activity] t -> prop_instrument
+end
 
-and ap_profile = {
-  ap_object : ap_object;
-  describes : prop_describes;
-}
+module IntransitiveActivity : sig
+  include module type of Object
 
-and ap_tombstone = {
-  ap_object : ap_object;
-  formerType : prop_formerType;
-  deleted : prop_deleted;
-}
+  val type_ : [> ty_link] t -> [> intransitiveActivities | `Unknown of anyURI]
 
-and prop_id = anyURI option
-and prop_type = anyURI list
-and prop_actor = (ty_object, ty_link) either list
-and prop_attachment = (ty_object, ty_link) either list
-and prop_attributedTo = (ty_object, ty_link) either list
-and prop_audience = (ty_object, ty_link) either list
-and prop_bcc = (ty_object, ty_link) either list
-and prop_bto = (ty_object, ty_link) either list
-and prop_cc = (ty_object, ty_link) either list
-and prop_context = (ty_object, ty_link) either list
-and prop_current = (ty_collectionPage, ty_link) either option
-and prop_first = (ty_collectionPage, ty_link) either option
-and prop_generator = (ty_object, ty_link) either list
-and prop_icon = (ap_object, ty_link) either list
-and prop_image = (ap_object, ty_link) either list
-and prop_inReplyTo = (ty_object, ty_link) either list
-and prop_instrument = (ty_object, ty_link) either list
-and prop_last = (ty_collectionPage, ty_link) either option
-and prop_location = (ty_object, ty_link) either list
-and prop_items = (ty_object, ty_link) either list
-and prop_oneOf = (ty_object, ty_link) either list
-and prop_anyOf = (ty_object, ty_link) either list
-and prop_closed = (ty_object, ty_link, dateTime, bool) either4 list
-and prop_origin = (ty_object, ty_link) either list
-and prop_next = (ty_collectionPage, ty_link) either option
-and prop_object = (ty_object, ty_link) either list
-and prop_prev = (ty_collectionPage, ty_link) either option
-and prop_preview = (ty_object, ty_link) either list
-and prop_result = (ty_object, ty_link) either list
-and prop_replies = ty_collection option
-and prop_tag = (ty_object, ty_link) either list
-and prop_target = (ty_object, ty_link) either list
-and prop_to = (ty_object, ty_link) either list
-and prop_url = (anyURI, ty_link) either list
-and prop_accuracy = float option
-and prop_altitude = float option
-and prop_content = string list
-and prop_name = string list
-and prop_duration = dateTime option
-and prop_height = nonNegativeInteger option
-and prop_href = anyURI option
-and prop_hreflang = string option (* TODO: not equivalent to [BCP47] Language Tag *)
-and prop_partOf = (ty_collection, ty_link) either option
-and prop_latitude = float option
-and prop_longitude = float option
-and prop_mediaType = string option (* TODO: not equivalent to MIME Media Type *)
-and prop_endTime = dateTime option
-and prop_published = dateTime option
-and prop_startTime = dateTime option
-and prop_radius = float option
-and prop_rel = string list list (* TODO: not equivalent to [RFC5988] or [HTML5] Link Relation *)
-and prop_startIndex = nonNegativeInteger option
-and prop_summary = string list
-and prop_totalItems = nonNegativeInteger option
-and prop_units = (units, anyURI) either option
-and prop_updated = dateTime option
-and prop_width = nonNegativeInteger option
-and prop_subject = (ty_object, ty_link) either option
-and prop_relationship = ty_object list
-and prop_describes = ty_object option
-and prop_formerType = ty_object list
-and prop_deleted = dateTime option
+  val actor : [> ty_intransitiveActivity] -> prop_actor
+  val target : [> ty_intransitiveActivity] -> prop_target
+  val result : [> ty_intransitiveActivity] -> prop_result
+  val origin : [> ty_intransitiveActivity] -> prop_origin
+  val instrument : [> ty_intransitiveActivity] -> prop_instrument
+end
+
+module Collection : sig
+  include module type of Object
+
+  val type_ : [> ty_link] t -> [> collections | `Unknown of anyURI]
+
+  val totalItems : [> ty_collection] -> prop_totalItems
+  val current : [> ty_collection] -> prop_current
+  val first : [> ty_collection] -> prop_first
+  val last : [> ty_collection] -> prop_last
+  val items : [> ty_collection] -> prop_items
+end
+
+module CollectionPage : sig
+  include module type of Collection
+
+  val type_ : [> ty_link] t -> [> collectionPages | `Unknown of anyURI]
+
+  val partOf : [> ty_collectionPage] -> prop_partOf
+  val next : [> ty_collectionPage] -> prop_next
+  val prev : [> ty_collectionPage] -> prop_prev
+end
+
+module OrderedCollectionPage : sig
+  include module type of CollectionPage
+
+  val startIndex : [> ty_orderedCollectionPage] -> prop_startIndex
+end
+
+module Question : sig
+  include module type of IntransitiveActivity
+
+  val oneOf : [> ty_question] -> prop_oneOf
+  val anyOf : [> ty_question] -> prop_anyOf
+  val closed : [> ty_question] -> prop_closed
+end
+
+module Relationship : sig
+  include module type of Object
+
+  val subject : [> ty_relationship] -> prop_subject
+  val object_ : [> ty_relationship] -> prop_object
+  val relationship : [> ty_relationship] -> prop_relationship
+end
+
+module Place : sig
+  include module type of Object
+
+  val accuracy : [> ty_place] -> prop_accuracy
+  val altitude : [> ty_place] -> prop_altitude
+  val latitude : [> ty_place] -> prop_latitude
+  val longitude : [> ty_place] -> prop_longitude
+  val radius : [> ty_place] -> prop_radius
+  val units : [> ty_place] -> prop_units
+end
+
+module Profile : sig
+  include module type of Object
+
+  val describes : [> ty_profile] -> prop_describes
+end
+
+module Tombstone : sig
+  include module type of Object
+
+  val formerType : [> ty_tombstone] -> prop_formerType
+  val deleted : [> ty_tombstone] -> prop_deleted
+end
