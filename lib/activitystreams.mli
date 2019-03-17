@@ -20,7 +20,7 @@ type ty_profile = [`Profile | ty_object]
 type ty_tombstone = [`Tombstone | ty_object]
 type ty_image = [`Image | ty_object]
 
-type 'a t constraint 'a = [> ty_any ]
+type 'a t constraint 'a = [> ]
 
 type prop_id = anyURI option
 type prop_type = anyURI list
@@ -133,17 +133,20 @@ type activities = [
   | `Dislike of ty_activity t
 ]
 
-type objects = [
-  (* Core Types *)
-  | `Object of ty_object t
-  | activities
-  | collections
-  (* Actor Types *)
+type actors = [
   | `Application of ty_object t
   | `Group of ty_object t
   | `Organization of ty_object t
   | `Person of ty_object t
   | `Service of ty_object t
+]
+
+type objects = [
+  (* Core Types *)
+  | `Object of ty_object t
+  | activities
+  | collections
+  | actors
   (* Object Types *)
   | `Relationship of ty_relationship t
   | `Article of ty_object t
@@ -170,7 +173,7 @@ module Unknown : sig
   type unknown
   type map = (string * unknown) list
 
-  val get_fields : [> ty_any] t -> (string * unknown) list
+  val get_fields : 'a t -> (string * unknown) list
 end
 
 module Any : sig
