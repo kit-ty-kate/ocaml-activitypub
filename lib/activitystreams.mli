@@ -244,11 +244,11 @@ module IntransitiveActivity : sig
 
   val type_ : [> ty_link] t -> [> intransitiveActivities | `Unknown of anyURI]
 
-  val actor : [> ty_intransitiveActivity] -> prop_actor
-  val target : [> ty_intransitiveActivity] -> prop_target
-  val result : [> ty_intransitiveActivity] -> prop_result
-  val origin : [> ty_intransitiveActivity] -> prop_origin
-  val instrument : [> ty_intransitiveActivity] -> prop_instrument
+  val actor : [> ty_intransitiveActivity] t -> prop_actor
+  val target : [> ty_intransitiveActivity] t -> prop_target
+  val result : [> ty_intransitiveActivity] t -> prop_result
+  val origin : [> ty_intransitiveActivity] t -> prop_origin
+  val instrument : [> ty_intransitiveActivity] t -> prop_instrument
 end
 
 module Collection : sig
@@ -256,11 +256,11 @@ module Collection : sig
 
   val type_ : [> ty_link] t -> [> collections | `Unknown of anyURI]
 
-  val totalItems : [> ty_collection] -> prop_totalItems
-  val current : [> ty_collection] -> prop_current
-  val first : [> ty_collection] -> prop_first
-  val last : [> ty_collection] -> prop_last
-  val items : [> ty_collection] -> prop_items
+  val totalItems : [> ty_collection] t -> prop_totalItems
+  val current : [> ty_collection] t -> prop_current
+  val first : [> ty_collection] t -> prop_first
+  val last : [> ty_collection] t -> prop_last
+  val items : [> ty_collection] t -> prop_items
 end
 
 module CollectionPage : sig
@@ -268,53 +268,53 @@ module CollectionPage : sig
 
   val type_ : [> ty_link] t -> [> collectionPages | `Unknown of anyURI]
 
-  val partOf : [> ty_collectionPage] -> prop_partOf
-  val next : [> ty_collectionPage] -> prop_next
-  val prev : [> ty_collectionPage] -> prop_prev
+  val partOf : [> ty_collectionPage] t -> prop_partOf
+  val next : [> ty_collectionPage] t -> prop_next
+  val prev : [> ty_collectionPage] t -> prop_prev
 end
 
 module OrderedCollectionPage : sig
   include module type of CollectionPage
 
-  val startIndex : [> ty_orderedCollectionPage] -> prop_startIndex
+  val startIndex : [> ty_orderedCollectionPage] t -> prop_startIndex
 end
 
 module Question : sig
   include module type of IntransitiveActivity
 
-  val oneOf : [> ty_question] -> prop_oneOf
-  val anyOf : [> ty_question] -> prop_anyOf
-  val closed : [> ty_question] -> prop_closed
+  val oneOf : [> ty_question] t -> prop_oneOf
+  val anyOf : [> ty_question] t -> prop_anyOf
+  val closed : [> ty_question] t -> prop_closed
 end
 
 module Relationship : sig
   include module type of Object
 
-  val subject : [> ty_relationship] -> prop_subject
-  val object_ : [> ty_relationship] -> prop_object
-  val relationship : [> ty_relationship] -> prop_relationship
+  val subject : [> ty_relationship] t -> prop_subject
+  val object_ : [> ty_relationship] t -> prop_object
+  val relationship : [> ty_relationship] t -> prop_relationship
 end
 
 module Place : sig
   include module type of Object
 
-  val accuracy : [> ty_place] -> prop_accuracy
-  val altitude : [> ty_place] -> prop_altitude
-  val latitude : [> ty_place] -> prop_latitude
-  val longitude : [> ty_place] -> prop_longitude
-  val radius : [> ty_place] -> prop_radius
-  val units : [> ty_place] -> prop_units
+  val accuracy : [> ty_place] t -> prop_accuracy
+  val altitude : [> ty_place] t -> prop_altitude
+  val latitude : [> ty_place] t -> prop_latitude
+  val longitude : [> ty_place] t -> prop_longitude
+  val radius : [> ty_place] t -> prop_radius
+  val units : [> ty_place] t -> prop_units
 end
 
 module Profile : sig
   include module type of Object
 
-  val describes : [> ty_profile] -> prop_describes
+  val describes : [> ty_profile] t -> prop_describes
 end
 
 module Tombstone : sig
   include module type of Object
 
-  val formerType : [> ty_tombstone] -> prop_formerType
-  val deleted : [> ty_tombstone] -> prop_deleted
+  val formerType : [> ty_tombstone] t -> prop_formerType
+  val deleted : [> ty_tombstone] t -> prop_deleted
 end
